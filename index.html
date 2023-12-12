@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CBL Tournament Pairing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #pairButton {
+            padding: 10px 20px;
+            margin-top: 20px;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CBL Tournament Pairing</h1>
+    <button id="pairButton">Pair Me</button>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('pairButton').addEventListener('click', function () {
+            var tiers = {
+                tier1: ["Shoaib", "Shahzaib", "Siraj"],
+                tier2: ["Jahangir", "Saad", "Fawad"],
+                tier3: ["Bilal", "Hassan", "Shahbaz"],
+                tier4: ["Sanghi", "Shakir", "Ghazi"]
+            };
+            var allParticipants = [].concat(tiers.tier1, tiers.tier2, tiers.tier3, tiers.tier4);
+            var result = document.getElementById('result');
+            result.innerHTML = '';
+
+            while (allParticipants.length > 0) {
+                var pair = [];
+                // Pick a random tier and a random participant from that tier
+                var randomTier = selectRandomTier(tiers, allParticipants);
+                var randomParticipant = pickRandomParticipant(randomTier, allParticipants);
+                pair.push(randomParticipant);
+
+                // Pick another participant from a different tier
+                var differentTier = selectRandomTier(tiers, allParticipants, randomParticipant.tier);
+                var anotherRandomParticipant = pickRandomParticipant(differentTier, allParticipants);
+                pair.push(anotherRandomParticipant);
+
+                result.innerHTML += pair.join(' - ') + '<br>';
+            }
+
+            function selectRandomTier(tiers, allParticipants, excludeTier) {
+                var tierNames = Object.keys(tiers).filter(function (tier) { return tier !== excludeTier; });
+                while (tierNames.length > 0) {
+                    var randomTierName = tierNames[Math.floor(Math.random() * tierNames.length)];
+                    if (tiers[randomTierName].some(name => allParticipants.includes(name))) {
+                        return { tier: randomTierName, participants: tiers[randomTierName] };
+                    } else {
+                        tierNames = tierNames.filter(tier => tier !== randomTierName);
+                    }
+                }
+            }
+
+            function pickRandomParticipant(tierObj, allParticipants) {
+                var availableParticipants = tierObj.participants.filter(name => allParticipants.includes(name));
+                var randomIndex = Math.floor(Math.random() * availableParticipants.length);
+                var selectedParticipant = availableParticipants[randomIndex];
+                allParticipants.splice(allParticipants.indexOf(selectedParticipant), 1);
+                return selectedParticipant;
+            }
+        });
+
+    </script>
+</body>
+</html>
